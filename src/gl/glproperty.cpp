@@ -231,7 +231,7 @@ void AlphaProperty::update( const NifModel * nif, const QModelIndex & block )
 		alphaSort = ( flags & 0x2000 ) == 0;
 
 		// Temporary Weapon Blood fix for FO4
-		if ( nif->getUserVersion2() == 130 )
+		if ( nif->getUserVersion2() == 130 || nif->getUserVersion2() == 155 )
 			alphaTest |= (flags == 20547);
 	}
 }
@@ -1148,8 +1148,127 @@ void BSLightingShaderProperty::updateParams( const NifModel * nif, const QModelI
 	auto textures = nif->getArray<QString>( getTextureSet(), "Textures" );
 
 	setShaderType( nif->get<unsigned int>( prop, "Skyrim Shader Type" ) );
-	setFlags1( nif->get<unsigned int>( prop, "Shader Flags 1" ) );
-	setFlags2( nif->get<unsigned int>( prop, "Shader Flags 2" ) );
+	
+	if( stream == 155 )
+	{
+		auto sfArray1 = nif->getArray<unsigned int>( prop, "Shader Flag Array 1" );
+		auto sfArray2 = nif->getArray<unsigned int>( prop, "Shader Flag Array 2" );
+		unsigned int tmp1 = 0, tmp2 = 0;
+		
+		for( auto &&v : sfArray1 )
+		{
+			if( v == 0xDF3182B0 )      // SKINNED
+				tmp1 |= 0x2;           // SF1_Skinned
+			else if( v == 0x98C95388 ) // TEMP_REFRACTION
+				tmp1 |= 0x4;           // SF1_Temp_Refraction
+			else if( v == 0x8B0FD1F2 ) // VERTEX_ALPHA
+				tmp1 |= 0x8;           // SF1_Vertex_Alpha
+			else if( v == 0x1A5C2577 ) // GRAYSCALE_TO_PALETTE_COLOR
+				tmp1 |= 0x10;          // SF1_Greyscale_To_PaletteColor
+			else if( v == 0xACEA54F4 ) // GRAYSCALE_TO_PALETTE_ALPHA
+				tmp1 |= 0x20;          // SF1_Greyscale_To_PaletteAlpha
+			else if( v == 0x5D2DABEC ) // CAST_SHADOWS
+				tmp1 |= 0x200;         // SF1_Cast_Shadows
+			else if( v == 0xEBB2186D ) // EYEREFLECT
+				tmp1 |= 0x20000;       // SF1_Eye_Environment_Mapping
+			else if( v == 0x86DBD392 ) // EMIT_ENABLED
+				tmp1 |= 0x400000;      // SF1_Own_Emit
+			else if( v == 0x1D642EDF ) // PROJECTED_UV
+				tmp1 |= 0x800000;      // SF1_Projected_UV
+			else if( v == 0x570364DF ) // TESSELLATE
+				tmp1 |= 0x2000000;     // SF1_Tessellate
+			else if( v == 0xE56D16E0 ) // DECAL
+				tmp1 |= 0x4000000;     // SF1_Decal
+			else if( v == 0x5DF93B67 ) // DYNAMIC_DECAL
+				tmp1 |= 0x8000000;     // SF1_Dynamic_Decal
+			else if( v == 0x802D68A3 ) // EXTERNAL_EMITTANCE
+				tmp1 |= 0x20000000;    // SF1_External_Emittance
+			else if( v == 0x67B70934 ) // ZBUFFER_TEST
+				tmp1 |= 0x80000000;    // SF1_ZBuffer_Test
+			else if( v == 0xBCBAC5F3 ) // ZBUFFER_WRITE
+				tmp2 |= 0x1;           // SF2_ZBuffer_Write
+			else if( v == 0xACA889F3 ) // LOD_OBJECTS
+				tmp2 |= 0x4;           // SF2_LOD_Objects
+			else if( v == 0x2D45EC6E ) // TWO_SIDED
+				tmp2 |= 0x10;          // SF2_Double_Sided
+			else if( v == 0x14C5C2AD ) // VERTEXCOLORS
+				tmp2 |= 0x20;          // SF2_Vertex_Colors
+			else if( v == 0x8F044840 ) // GLOWMAP
+				tmp2 |= 0x40;          // SF2_Glow_Map
+			else if( v == 0xBE8ADFF2 ) // TRANSFORM_CHANGED
+				tmp2 |= 0x80;          // SF2_Transform_Changed
+			else if( v == 0xE3E702C9 ) // DISMEMBERMENT_MEATCUFF
+				tmp2 |= 0x100;         // SF2_Dismemberment_Meatcuff
+			else if( v == 0x39D8D9DC ) // TINT
+				tmp2 |= 0x200;         // SF2_Tint
+			else if( v == 0xA38C3547 ) // GRASS_UNIFORM_SCALE
+				tmp2 |= 0x800;         // SF2_Uniform_Scale
+			else if( v == 0x4185E4D2 ) // GRASS_BILLBOARD
+				tmp2 |= 0x2000;        // SF2_Billboard
+			else if( v == 0xAF7A8B94 ) // DISMEMBERMENT
+				tmp2 |= 0x8000;        // SF2_Dismemberment
+			else if( v == 0x4FB09F58 ) // WIREFRAME
+				tmp2 |= 0x10000;       // SF2_Wireframe
+			else if( v == 0x7BE0BF93 ) // WEAPON_BLOOD
+				tmp2 |= 0x20000;       // SF2_Weapon_Blood
+			else if( v == 0xE0387DC5 ) // HIDE_ON_LOCAL_MAP
+				tmp2 |= 0x40000;       // SF2_Hide_On_Local_Map
+			else if( v == 0xC7AC4F21 ) // VATS_TARGET
+				tmp2 |= 0x100000;      // SF2_VATS_Target
+			else if( v == 0x25322370 ) // MENU_SCREEN
+				tmp2 |= 0x800000;      // SF2_Menu_Screen
+			else if( v == 0xDAF59922 ) // ALPHA_TEST
+				tmp2 |= 0x2000000;     // SF2_Alpha_Test
+			else if( v == 0xD200543A ) // VATS_TARGET_DRAW_ALL
+				tmp2 |= 0x8000000;     // SF2_VATS_Target_Draw_All
+			else if( v == 0x46180AD9 ) // PIPBOY_SCREEN
+				tmp2 |= 0x10000000;    // SF2_Pipboy_Screen
+			else if( v == 0xBB222B29 ) // TREE_ANIM
+				tmp2 |= 0x20000000;    // SF2_Tree_Anim
+			else if( v == 0xCF08760A ) // EFFECT_LIGHTING
+				tmp2 |= 0x40000000;    // SF2_Effect_Lighting
+			else if( v == 0x2FF8F0EC ) // REFRACTION_WRITES_DEPTH
+				tmp2 |= 0x80000000;    // SF2_Refraction_Writes_Depth		
+		}
+
+		for( auto &&v : sfArray2 )
+		{
+			if( v == 0xDF3182B0 )      // SKINNED
+				tmp1 |= 0x2;           // SF1_Skinned
+			else if( v == 0xED440D9C ) // FALLOFF
+				tmp1 |= 0x40;          // SF1_Use_Falloff
+			else if( v == 0xAC7B1CAA ) // ENVMAP
+				tmp1 |= 0x80;          // SF1_Environment_Mapping
+			else if( v == 0xCD92BF4B ) // RGB_FALLOFF
+				tmp1 |= 0x100;         // SF1_RGB_Falloff
+			else if( v == 0x12C549CF ) // FACE
+				tmp1 |= 0x400;         // SF1_FaceGen
+			else if( v == 0x97E67F9F ) // MODELSPACENORMALS
+				tmp1 |= 0x1000;        // SF1_Model_Space_Normals
+			else if( v == 0x74AAC97E ) // REFRACTION
+				tmp1 |= 0x8000;        // SF1_Refraction
+			else if( v == 0x4B58B946 ) // HAIRTINT
+				tmp1 |= 0x40000;       // SF1_Hair
+			else if( v == 0xE52CD75E ) // LOCALMAP_CLEAR
+				tmp1 |= 0x100000;      // SF1_Localmap_Hide_Secret
+			else if( v == 0x58727978 ) // SKIN_TINT
+				tmp1 |= 0x200000;      // SF1_Skin_Tint
+			else if( v == 0xD0CE0E30 ) // SOFT_EFFECT
+				tmp1 |= 0x40000000;    // SF1_Soft_Effect
+			else if( v == 0xB2757B8C ) // NOFADE
+				tmp2 |= 0x8;           // SF2_No_Fade
+			else if( v == 0x633D9B6D ) // SKEW_SPECULAR_ALPHA
+				tmp2 |= 0x400000;      // SF2_Skew_Specular_Alpha
+		}
+
+		setFlags1( tmp1 );
+		setFlags2( tmp2 );
+	}
+	else
+	{
+		setFlags1( nif->get<unsigned int>( prop, "Shader Flags 1" ) );
+		setFlags2( nif->get<unsigned int>( prop, "Shader Flags 2" ) );
+	}
 
 	hasVertexAlpha = hasSF1( ShaderFlags::SLSF1_Vertex_Alpha );
 	hasVertexColors = hasSF2( ShaderFlags::SLSF2_Vertex_Colors );
@@ -1477,8 +1596,126 @@ void BSEffectShaderProperty::updateParams( const NifModel * nif, const QModelInd
 
 	auto stream = nif->getUserVersion2();
 
-	setFlags1( nif->get<unsigned int>( prop, "Shader Flags 1" ) );
-	setFlags2( nif->get<unsigned int>( prop, "Shader Flags 2" ) );
+	if( stream == 155 )
+	{
+		auto sfArray1 = nif->getArray<unsigned int>( prop, "Shader Flag Array 1" );
+		auto sfArray2 = nif->getArray<unsigned int>( prop, "Shader Flag Array 2" );
+		unsigned int tmp1 = 0, tmp2 = 0;
+		
+		for( auto &&v : sfArray1 )
+		{
+			if( v == 0xDF3182B0 )      // SKINNED
+				tmp1 |= 0x2;           // SF1_Skinned
+			else if( v == 0x98C95388 ) // TEMP_REFRACTION
+				tmp1 |= 0x4;           // SF1_Temp_Refraction
+			else if( v == 0x8B0FD1F2 ) // VERTEX_ALPHA
+				tmp1 |= 0x8;           // SF1_Vertex_Alpha
+			else if( v == 0x1A5C2577 ) // GRAYSCALE_TO_PALETTE_COLOR
+				tmp1 |= 0x10;          // SF1_Greyscale_To_PaletteColor
+			else if( v == 0xACEA54F4 ) // GRAYSCALE_TO_PALETTE_ALPHA
+				tmp1 |= 0x20;          // SF1_Greyscale_To_PaletteAlpha
+			else if( v == 0x5D2DABEC ) // CAST_SHADOWS
+				tmp1 |= 0x200;         // SF1_Cast_Shadows
+			else if( v == 0xEBB2186D ) // EYEREFLECT
+				tmp1 |= 0x20000;       // SF1_Eye_Environment_Mapping
+			else if( v == 0x86DBD392 ) // EMIT_ENABLED
+				tmp1 |= 0x400000;      // SF1_Own_Emit
+			else if( v == 0x1D642EDF ) // PROJECTED_UV
+				tmp1 |= 0x800000;      // SF1_Projected_UV
+			else if( v == 0x570364DF ) // TESSELLATE
+				tmp1 |= 0x2000000;     // SF1_Tessellate
+			else if( v == 0xE56D16E0 ) // DECAL
+				tmp1 |= 0x4000000;     // SF1_Decal
+			else if( v == 0x5DF93B67 ) // DYNAMIC_DECAL
+				tmp1 |= 0x8000000;     // SF1_Dynamic_Decal
+			else if( v == 0x802D68A3 ) // EXTERNAL_EMITTANCE
+				tmp1 |= 0x20000000;    // SF1_External_Emittance
+			else if( v == 0x67B70934 ) // ZBUFFER_TEST
+				tmp1 |= 0x80000000;    // SF1_ZBuffer_Test
+			else if( v == 0xBCBAC5F3 ) // ZBUFFER_WRITE
+				tmp2 |= 0x1;           // SF2_ZBuffer_Write
+			else if( v == 0xACA889F3 ) // LOD_OBJECTS
+				tmp2 |= 0x4;           // SF2_LOD_Objects
+			else if( v == 0x2D45EC6E ) // TWO_SIDED
+				tmp2 |= 0x10;          // SF2_Double_Sided
+			else if( v == 0x14C5C2AD ) // VERTEXCOLORS
+				tmp2 |= 0x20;          // SF2_Vertex_Colors
+			else if( v == 0x8F044840 ) // GLOWMAP
+				tmp2 |= 0x40;          // SF2_Glow_Map
+			else if( v == 0xBE8ADFF2 ) // TRANSFORM_CHANGED
+				tmp2 |= 0x80;          // SF2_Transform_Changed
+			else if( v == 0xE3E702C9 ) // DISMEMBERMENT_MEATCUFF
+				tmp2 |= 0x100;         // SF2_Dismemberment_Meatcuff
+			else if( v == 0x39D8D9DC ) // TINT
+				tmp2 |= 0x200;         // SF2_Tint
+			else if( v == 0xA38C3547 ) // GRASS_UNIFORM_SCALE
+				tmp2 |= 0x800;         // SF2_Uniform_Scale
+			else if( v == 0x4185E4D2 ) // GRASS_BILLBOARD
+				tmp2 |= 0x2000;        // SF2_Billboard
+			else if( v == 0xAF7A8B94 ) // DISMEMBERMENT
+				tmp2 |= 0x8000;        // SF2_Dismemberment
+			else if( v == 0x4FB09F58 ) // WIREFRAME
+				tmp2 |= 0x10000;       // SF2_Wireframe
+			else if( v == 0x7BE0BF93 ) // WEAPON_BLOOD
+				tmp2 |= 0x20000;       // SF2_Weapon_Blood
+			else if( v == 0xE0387DC5 ) // HIDE_ON_LOCAL_MAP
+				tmp2 |= 0x40000;       // SF2_Hide_On_Local_Map
+			else if( v == 0xC7AC4F21 ) // VATS_TARGET
+				tmp2 |= 0x100000;      // SF2_VATS_Target
+			else if( v == 0x25322370 ) // MENU_SCREEN
+				tmp2 |= 0x800000;      // SF2_Menu_Screen
+			else if( v == 0xDAF59922 ) // ALPHA_TEST
+				tmp2 |= 0x2000000;     // SF2_Alpha_Test
+			else if( v == 0xD200543A ) // VATS_TARGET_DRAW_ALL
+				tmp2 |= 0x8000000;     // SF2_VATS_Target_Draw_All
+			else if( v == 0x46180AD9 ) // PIPBOY_SCREEN
+				tmp2 |= 0x10000000;    // SF2_Pipboy_Screen
+			else if( v == 0xBB222B29 ) // TREE_ANIM
+				tmp2 |= 0x20000000;    // SF2_Tree_Anim
+			else if( v == 0xCF08760A ) // EFFECT_LIGHTING
+				tmp2 |= 0x40000000;    // SF2_Effect_Lighting
+			else if( v == 0x2FF8F0EC ) // REFRACTION_WRITES_DEPTH
+				tmp2 |= 0x80000000;    // SF2_Refraction_Writes_Depth		
+		}
+
+		for( auto &&v : sfArray2 )
+		{
+			if( v == 0xDF3182B0 )      // SKINNED
+				tmp1 |= 0x2;           // SF1_Skinned
+			else if( v == 0xED440D9C ) // FALLOFF
+				tmp1 |= 0x40;          // SF1_Use_Falloff
+			else if( v == 0xAC7B1CAA ) // ENVMAP
+				tmp1 |= 0x80;          // SF1_Environment_Mapping
+			else if( v == 0xCD92BF4B ) // RGB_FALLOFF
+				tmp1 |= 0x100;         // SF1_RGB_Falloff
+			else if( v == 0x12C549CF ) // FACE
+				tmp1 |= 0x400;         // SF1_FaceGen
+			else if( v == 0x97E67F9F ) // MODELSPACENORMALS
+				tmp1 |= 0x1000;        // SF1_Model_Space_Normals
+			else if( v == 0x74AAC97E ) // REFRACTION
+				tmp1 |= 0x8000;        // SF1_Refraction
+			else if( v == 0x4B58B946 ) // HAIRTINT
+				tmp1 |= 0x40000;       // SF1_Hair
+			else if( v == 0xE52CD75E ) // LOCALMAP_CLEAR
+				tmp1 |= 0x100000;      // SF1_Localmap_Hide_Secret
+			else if( v == 0x58727978 ) // SKIN_TINT
+				tmp1 |= 0x200000;      // SF1_Skin_Tint
+			else if( v == 0xD0CE0E30 ) // SOFT_EFFECT
+				tmp1 |= 0x40000000;    // SF1_Soft_Effect
+			else if( v == 0xB2757B8C ) // NOFADE
+				tmp2 |= 0x8;           // SF2_No_Fade
+			else if( v == 0x633D9B6D ) // SKEW_SPECULAR_ALPHA
+				tmp2 |= 0x400000;      // SF2_Skew_Specular_Alpha
+		}
+
+		setFlags1( tmp1 );
+		setFlags2( tmp2 );
+	}
+	else
+	{
+		setFlags1( nif->get<unsigned int>( prop, "Shader Flags 1" ) );
+		setFlags2( nif->get<unsigned int>( prop, "Shader Flags 2" ) );
+	}
 
 	hasVertexAlpha = hasSF1( ShaderFlags::SLSF1_Vertex_Alpha );
 	hasVertexColors = hasSF2( ShaderFlags::SLSF2_Vertex_Colors );
