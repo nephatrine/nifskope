@@ -1329,7 +1329,7 @@ QVariant NifModel::data( const QModelIndex & idx, int role ) const
 			case NameCol:
 				// (QColor, QIcon or QPixmap) as stated in the docs
 				/*if ( itemType( index ) == "NiBlock" )
-				    return QString::number( getBlockNumber( index ) );*/
+					return QString::number( getBlockNumber( index ) );*/
 				return QVariant();
 			default:
 				return QVariant();
@@ -1460,10 +1460,10 @@ QVariant NifModel::data( const QModelIndex & idx, int role ) const
 						{
 							Color4 c = item->value().get<ByteColor4>();
 							return QString( "R %1\nG %2\nB %3\nA %4" )
-								.arg( c[0] )
-								.arg( c[1] )
-								.arg( c[2] )
-								.arg( c[3] );
+							    .arg( c[0] )
+							    .arg( c[1] )
+							    .arg( c[2] )
+							    .arg( c[3] );
 						}
 					case NifValue::tColor4:
 						{
@@ -2282,6 +2282,8 @@ bool NifModel::loadItem( NifItem * parent, NifIStream & stream )
 	if ( !parent )
 		return false;
 
+	bool hasName = true;
+
 	for ( auto child : parent->children() ) {
 		if ( !child->isConditionless() )
 			child->invalidateCondition();
@@ -2290,6 +2292,9 @@ bool NifModel::loadItem( NifItem * parent, NifIStream & stream )
 			//qDebug() << "Not loading abstract item " << child->name();
 			continue;
 		}
+
+		if ( hasName && child->cond() == "Name" )
+			continue;
 
 		if ( evalCondition( child ) ) {
 			if ( isArray( child ) ) {
@@ -2302,6 +2307,13 @@ bool NifModel::loadItem( NifItem * parent, NifIStream & stream )
 				if ( !stream.read( child->value() ) )
 					return false;
 			}
+		}
+
+		if( child->name() == "Name" && child->type() == "string" )
+		{
+			QVector<QString> stringVector = getArray<QString>( getIndex( getHeader(), "Strings" ) );
+			if(stringVector[child->value().toCount()] == "")
+				hasName = false;
 		}
 	}
 
@@ -2328,11 +2340,16 @@ bool NifModel::saveItem( NifItem * parent, NifOStream & stream ) const
 	if ( !parent )
 		return false;
 
+	bool hasName = true;
+
 	for ( auto child : parent->children() ) {
 		if ( child->isAbstract() ) {
 			qDebug() << "Not saving abstract item " << child->name();
 			continue;
 		}
+
+		if ( hasName && child->cond() == "Name" )
+			continue;
 
 		if ( evalCondition( child ) ) {
 			if ( isArray( child ) || !child->arr2().isEmpty() || child->childCount() > 0 ) {
@@ -2352,6 +2369,13 @@ bool NifModel::saveItem( NifItem * parent, NifOStream & stream ) const
 				if ( !stream.write( child->value() ) )
 					return false;
 			}
+		}
+
+		if( child->name() == "Name" && child->type() == "string" )
+		{
+			QVector<QString> stringVector = getArray<QString>( getIndex( getHeader(), "Strings" ) );
+			if(stringVector[child->value().toCount()] == "")
+				hasName = false;
 		}
 	}
 
