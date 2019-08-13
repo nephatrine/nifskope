@@ -558,6 +558,12 @@ bool BSA::fileContents( const QString & fn, QByteArray & content )
 						ddsHeader.dwPitchOrLinearSize = file->tex.header.width * file->tex.header.height;	// 8bpp
 						break;
 
+					case DXGI_FORMAT_BC5_SNORM:
+						ddsHeader.ddspf.dwFlags = DDS_FOURCC;
+						ddsHeader.ddspf.dwFourCC = MAKEFOURCC( 'B', 'C', '5', 'S' );
+						ddsHeader.dwPitchOrLinearSize = file->tex.header.width * file->tex.header.height;	// 8bpp
+						break;
+
 					case DXGI_FORMAT_B8G8R8A8_UNORM:
 						ddsHeader.ddspf.dwFlags = DDS_RGBA;
 						ddsHeader.ddspf.dwRGBBitCount = 32;
