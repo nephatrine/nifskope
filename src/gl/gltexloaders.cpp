@@ -992,110 +992,118 @@ gli::texture load_if_valid( const char * data, unsigned int size )
 	using namespace gli;
 	using namespace gli::detail;
 
-	if ( strncmp( data, FOURCC_DDS, 4 ) != 0 || size < sizeof( dds_header ) )
+	if( size < sizeof( FOURCC_DDS ) || size < sizeof(dds_header) || strncmp( data, FOURCC_DDS, 4 ) != 0 )
 		return texture();
 
 	std::size_t Offset = sizeof( FOURCC_DDS );
 
-	dds_header const & Header( *reinterpret_cast<dds_header const *>(data + Offset) );
+	dds_header const & Header( *reinterpret_cast<dds_header const *>( data + Offset ) );
 	Offset += sizeof( dds_header );
 
 	dds_header10 Header10;
-	if ( (Header.Format.flags & dx::DDPF_FOURCC) && (Header.Format.fourCC == dx::D3DFMT_DX10 || Header.Format.fourCC == dx::D3DFMT_GLI1) ) {
+	if( ( Header.Format.flags & dx::DDPF_FOURCC ) && ( Header.Format.fourCC == dx::D3DFMT_DX10 || Header.Format.fourCC == dx::D3DFMT_GLI1 ) )
+	{
 		std::memcpy( &Header10, data + Offset, sizeof( Header10 ) );
 		Offset += sizeof( dds_header10 );
 	}
 
 	dx DX;
 
-	format Format( static_cast<format>(FORMAT_INVALID) );
-	if ( (Header.Format.flags & (dx::DDPF_RGB | dx::DDPF_ALPHAPIXELS | dx::DDPF_ALPHA | dx::DDPF_YUV | dx::DDPF_LUMINANCE)) && Format == static_cast<format>(gli::FORMAT_INVALID) && Header.Format.bpp != 0 ) {
-		switch ( Header.Format.bpp ) {
+	format Format( gli::FORMAT_UNDEFINED );
+	if( ( Header.Format.flags & ( dx::DDPF_RGB | dx::DDPF_ALPHAPIXELS | dx::DDPF_ALPHA | dx::DDPF_YUV | dx::DDPF_LUMINANCE ) ) && Format == gli::FORMAT_UNDEFINED && Header.Format.bpp != 0 )
+	{
+		switch( Header.Format.bpp )
+		{
 		default:
 			break;
 		case 8:
 			{
-				if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG4_UNORM_PACK8 ).Mask ) ) )
+				if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG4_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_RG4_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_L8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_L8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_L8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_A8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_A8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_A8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_R8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG3B2_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG3B2_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_RG3B2_UNORM_PACK8;
 				break;
 			}
 		case 16:
 			{
-				if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGBA4_UNORM_PACK16 ).Mask ) ) )
+				if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGBA4_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_RGBA4_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGRA4_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGRA4_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_BGRA4_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R5G6B5_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R5G6B5_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_R5G6B5_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_B5G6R5_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_B5G6R5_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_B5G6R5_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB5A1_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB5A1_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_RGB5A1_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR5A1_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR5A1_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_BGR5A1_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_LA8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_LA8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_LA8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_RG8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_L16_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_L16_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_L16_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_A16_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_A16_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_A16_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R16_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R16_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_R16_UNORM_PACK16;
 				break;
 			}
 		case 24:
 			{
-				if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB8_UNORM_PACK8 ).Mask ) ) )
+				if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_RGB8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_BGR8_UNORM_PACK8;
 				break;
 			}
 		case 32:
 			{
-				if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR8_UNORM_PACK32 ).Mask ) ) )
+				if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGR8_UNORM_PACK32 ).Mask ) ) )
 					Format = FORMAT_BGR8_UNORM_PACK32;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGRA8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_BGRA8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_BGRA8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGBA8_UNORM_PACK8 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGBA8_UNORM_PACK8 ).Mask ) ) )
 					Format = FORMAT_RGBA8_UNORM_PACK8;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB10A2_UNORM_PACK32 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RGB10A2_UNORM_PACK32 ).Mask ) ) )
 					Format = FORMAT_RGB10A2_UNORM_PACK32;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_LA16_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_LA16_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_LA16_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG16_UNORM_PACK16 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_RG16_UNORM_PACK16 ).Mask ) ) )
 					Format = FORMAT_RG16_UNORM_PACK16;
-				else if ( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R32_SFLOAT_PACK32 ).Mask ) ) )
+				else if( glm::all( glm::equal( Header.Format.Mask, DX.translate( FORMAT_R32_SFLOAT_PACK32 ).Mask ) ) )
 					Format = FORMAT_R32_SFLOAT_PACK32;
 				break;
 			}
 		}
-	} else if ( (Header.Format.flags & dx::DDPF_FOURCC) && (Header.Format.fourCC != dx::D3DFMT_DX10) && (Header.Format.fourCC != dx::D3DFMT_GLI1) && (Format == static_cast<format>(gli::FORMAT_INVALID)) ) {
+	}
+	else if( ( Header.Format.flags & dx::DDPF_FOURCC ) && ( Header.Format.fourCC != dx::D3DFMT_DX10 ) && ( Header.Format.fourCC != dx::D3DFMT_GLI1 ) && ( Format == gli::FORMAT_UNDEFINED ) )
+	{
 		dx::d3dfmt const FourCC = remap_four_cc( Header.Format.fourCC );
 		Format = DX.find( FourCC );
-	} else if ( Header.Format.fourCC == dx::D3DFMT_DX10 || Header.Format.fourCC == dx::D3DFMT_GLI1 )
+	}
+	else if( Header.Format.fourCC == dx::D3DFMT_DX10 || Header.Format.fourCC == dx::D3DFMT_GLI1 )
 		Format = DX.find( Header.Format.fourCC, Header10.Format );
 
-	if ( Format == static_cast<format>(FORMAT_INVALID) )
+	if( Format == gli::FORMAT_UNDEFINED )
 		return texture();
 
-	size_t const MipMapCount = (Header.Flags & DDSD_MIPMAPCOUNT) ? Header.MipMapLevels : 1;
+	size_t const MipMapCount = ( Header.Flags & DDSD_MIPMAPCOUNT ) ? Header.MipMapLevels : 1;
 	size_t FaceCount = 1;
-	if ( Header.CubemapFlags & DDSCAPS2_CUBEMAP )
+	if( Header.CubemapFlags & DDSCAPS2_CUBEMAP )
 		FaceCount = int( glm::bitCount( Header.CubemapFlags & DDSCAPS2_CUBEMAP_ALLFACES ) );
+	else if( Header10.MiscFlag & D3D10_RESOURCE_MISC_TEXTURECUBE )
+		FaceCount = 6;
 
 	size_t DepthCount = 1;
-	if ( Header.CubemapFlags & DDSCAPS2_VOLUME )
+	if( Header.CubemapFlags & DDSCAPS2_VOLUME )
 		DepthCount = Header.Depth;
 
 	texture Texture(
@@ -1104,14 +1112,13 @@ gli::texture load_if_valid( const char * data, unsigned int size )
 		std::max<texture::size_type>( Header10.ArraySize, 1 ), FaceCount, MipMapCount );
 
 	std::size_t const SourceSize = Offset + Texture.size();
-	if ( SourceSize > size )
+	if ( SourceSize != size )
 		return texture();
 
 	std::memcpy( Texture.data(), data + Offset, Texture.size() );
 
 	return Texture;
 }
-
 
 bool texLoad( const QString & filepath, QString & format, GLenum & target, GLuint & width, GLuint & height, GLuint & mipmaps, GLuint & id)
 {
