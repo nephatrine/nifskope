@@ -776,12 +776,12 @@ bool Renderer::setupProgram( Program * prog, Shape * mesh, const PropertyList & 
 
 		prog->uni1i( HAS_MAP_SPEC, mesh->bslsp->hasSpecularMap );
 
-		if ( mesh->bslsp->hasSpecularMap && (mesh->nifVersion == 130 || !mesh->bslsp->hasBacklight) )
+		if ( mesh->bslsp->hasSpecularMap && (mesh->nifVersion == 130 || mesh->nifVersion == 155 || !mesh->bslsp->hasBacklight) )
 			prog->uniSampler( bsprop, SAMP_SPECULAR, 7, texunit, white, clamp );
 		else
 			prog->uniSampler( bsprop, SAMP_SPECULAR, 7, texunit, black, clamp );
 
-		if ( mesh->nifVersion == 130 ) {
+		if ( mesh->nifVersion == 130 || mesh->nifVersion == 155 ) {
 			prog->uni1i( DOUBLE_SIDE, mesh->bslsp->getIsDoubleSided() );
 			prog->uni1f( G2P_SCALE, mesh->bslsp->paletteScale );
 			prog->uni1f( SS_ROLLOFF, mesh->bslsp->getLightingEffect1() );
@@ -883,7 +883,7 @@ bool Renderer::setupProgram( Program * prog, Shape * mesh, const PropertyList & 
 		// BSEffectShader textures
 		prog->uniSampler( bsprop, SAMP_GRAYSCALE, 1, texunit, "", TexClampMode::MIRRORED_S_MIRRORED_T );
 
-		if ( mesh->nifVersion == 130 ) {
+		if ( mesh->nifVersion == 130 || mesh->nifVersion == 155 ) {
 
 			prog->uni1f( LIGHT_INF, mesh->bsesp->getLightingInfluence() );
 

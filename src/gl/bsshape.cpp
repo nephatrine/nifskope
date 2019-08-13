@@ -64,7 +64,7 @@ void BSShape::update( const NifModel * nif, const QModelIndex & index )
 
 	bool isDataOnSkin = false;
 	bool isSkinned = vertexFlags & VertexFlags::VF_SKINNED;
-	if ( nifVersion == 130 ) {
+	if ( nifVersion == 130 || nifVersion == 155 ) {
 		skinInstName = "BSSkin::Instance";
 		skinDataName = "BSSkin::BoneData";
 	} else {
@@ -399,7 +399,7 @@ void BSShape::drawShapes( NodeList * secondPass, bool presort )
 
 		bool doVCs = (bssp && (bssp->getFlags2() & ShaderFlags::SLSF2_Vertex_Colors));
 		// Always do vertex colors for FO4 if colors present
-		if ( nifVersion == 130 && hasVertexColors && colors.count() )
+		if ( ( nifVersion == 130 || nifVersion == 155 )&& hasVertexColors && colors.count() )
 			doVCs = true;
 
 		if ( transColors.count() && (scene->options & Scene::DoVertexColors) && doVCs ) {
