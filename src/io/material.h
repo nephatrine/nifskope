@@ -108,6 +108,11 @@ protected:
 	quint8 bEnvironmentMapping = 0;
 	float fEnvironmentMappingMaskScale = 1.0;
 	quint8 bGrayscaleToPaletteColor = 1.0;
+
+	quint8 bDepthBias = 0;
+	quint8 iMaskWrites = 63;
+	
+	qint64 position_ = 0;
 };
 
 
@@ -176,6 +181,26 @@ protected:
 	float fGrayscaleToPaletteScale = 0;
 	quint8 bSkewSpecularAlpha = 0;
 
+	quint8 bTranslucency = 0;
+	quint8 bTranslucencyThickObject = 0;
+	quint8 bTranslucencyMixAlbedoWithSubsurfaceColor = 0;
+	float tsscR = 0, tsscG = 0, tsscB = 0;
+	Color3 cTranslucencySubsurfaceColor;
+	float fTranslucencyTransmissiveScale = 0;
+	float fTranslucencyTurbulence = 0;
+	quint8 bPBR = 0;
+	quint8 bCustomPorosity = 0;
+	float fPorosity = 0;
+	float fLumEmittance = 0;
+	quint8 bUseAdaptativeEmissive  = 0;
+	float fAdaptativeEmissive_ExposureOffset = 0;
+	float fAdaptativeEmissive_FinalExposureMin  = 0;
+	float fAdaptativeEmissive_FinalExposureMax  = 0;
+	quint8 bTerrain  = 0;
+	quint32 uUnknown = 0;
+	float fTerrainThresholdFalloff  = 0;
+	float fTerrainTilingDistance  = 0;
+	float fTerrainRotationAngle   = 0;
 };
 
 
@@ -210,6 +235,16 @@ protected:
 	float fLightingInfluence = 1.0;
 	quint8 iEnvmapMinLOD = 0;
 	float fSoftDepth = 100.0;
+	
+	quint8 bEnvironmentMapping = 0;
+	float EnvironmentMappingMaskScale = 0;
+	float emitR = 1.0, emitG = 1.0, emitB = 1.0;
+	Color3 cEmittanceColor;
+	float fAdaptativeEmissive_ExposureOffset = 0;
+	float fAdaptativeEmissive_FinalExposureMin = 0;
+	float fAdaptativeEmissive_FinalExposureMax = 0;
+	quint8 bGlowmap = 0;
+	quint8 bEffectPbrSpecular = 0;
 };
 
 

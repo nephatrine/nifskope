@@ -64,6 +64,7 @@ bool Material::readFile()
 		return false;
 
 	QBuffer f( &data );
+
 	if ( f.open( QIODevice::ReadOnly ) ) {
 		in.setDevice( &f );
 		in.setByteOrder( QDataStream::LittleEndian );
@@ -88,8 +89,18 @@ bool Material::readFile()
 		in >> bScreenSpaceReflections >> bWetnessControl_ScreenSpaceReflections;
 		in >> bDecal >> bTwoSided >> bDecalNoFade >> bNonOccluder;
 		in >> bRefraction >> bRefractionFalloff >> fRefractionPower;
-		in >> bEnvironmentMapping >> fEnvironmentMappingMaskScale;
+
+		if( version < 10 )
+			in >> bEnvironmentMapping >> fEnvironmentMappingMaskScale;
+		else
+			in >> bDepthBias;
+
 		in >> bGrayscaleToPaletteColor;
+
+		if( version >= 6 )
+			in >> iMaskWrites;
+
+		position_ = f.pos();
 
 		return in.status() == QDataStream::Ok;
 	}
@@ -175,29 +186,78 @@ bool ShaderMaterial::readFile()
 		return false;
 
 	QBuffer f( &data );
+
 	if ( f.open( QIODevice::ReadOnly ) ) {
 		in.setDevice( &f );
 		in.setByteOrder( QDataStream::LittleEndian );
 		in.setFloatingPointPrecision( QDataStream::SinglePrecision );
 
-		in.skipRawData( 63 );
+		in.skipRawData( position_ );
 
-		for ( int i = 0; i < 9; i++ ) {
+		for ( int i = 0; i < 4; i++ ) {
 			char * str;
 			in >> str;
 			textureList << QString( str );
 		}
 
-		in >> bEnableEditorAlphaRef >> bRimLighting;
-		in >> fRimPower >> fBacklightPower;
-		in >> bSubsurfaceLighting >> fSubsurfaceLightingRolloff;
+		if( version > 2 )
+		{
+			for ( int i = 0; i < 5; i++ ) {
+				char * str;
+				in >> str;
+				textureList << QString( str );
+			}
+
+			if( version >= 17 )
+			{
+				char * str;
+				in >> str;
+				textureList << QString( str );
+			}
+		}
+		else
+		{
+			for ( int i = 0; i < 5; i++ ) {
+				char * str;
+				in >> str;
+				textureList << QString( str );
+			}
+		}
+
+		in >> bEnableEditorAlphaRef;
+
+		if( version >= 8 )
+		{
+			in >> bTranslucency >> bTranslucencyThickObject >> bTranslucencyMixAlbedoWithSubsurfaceColor;
+			in >> tsscR >> tsscG >> tsscB;
+			cTranslucencySubsurfaceColor.setRGB( tsscR, tsscG, tsscB );
+			in >> fTranslucencyTransmissiveScale >> fTranslucencyTurbulence;
+		}
+		else
+		{
+			in >> bRimLighting >> fRimPower >> fBacklightPower;
+			in >> bSubsurfaceLighting >> fSubsurfaceLightingRolloff;
+		}
+		
 		in >> bSpecularEnabled;
 		in >> specR >> specG >> specB;
 		cSpecularColor.setRGB( specR, specG, specB );
 		in >> fSpecularMult >> fSmoothness >> fFresnelPower;
 		in >> fWetnessControl_SpecScale >> fWetnessControl_SpecPowerScale >> fWetnessControl_SpecMinvar;
-		in >> fWetnessControl_EnvMapScale >> fWetnessControl_FresnelPower >> fWetnessControl_Metalness;
 
+		if( version < 10 )
+			in >> fWetnessControl_EnvMapScale;
+
+		in >> fWetnessControl_FresnelPower >> fWetnessControl_Metalness;
+
+		if( version > 2 )
+		{
+			in >> bPBR;
+			
+			if( version >= 9 )
+				in >> bCustomPorosity >> fPorosity;
+		}
+		
 		char * rootMaterialStr;
 		in >> rootMaterialStr;
 		sRootMaterialPath = QString( rootMaterialStr );
@@ -209,17 +269,51 @@ bool ShaderMaterial::readFile()
 		cEmittanceColor.setRGB( emitR, emitG, emitB );
 
 		in >> fEmittanceMult >> bModelSpaceNormals;
-		in >> bExternalEmittance >> bBackLighting;
+		in >> bExternalEmittance;
+		
+		if( version >= 12 )
+			in >> fLumEmittance;
+
+		if( version >= 13 )
+			in >> bUseAdaptativeEmissive >> fAdaptativeEmissive_ExposureOffset >> fAdaptativeEmissive_FinalExposureMin >> fAdaptativeEmissive_FinalExposureMax;
+		
+		if( version < 8 )
+			in >> bBackLighting;
+		
 		in >> bReceiveShadows >> bHideSecret >> bCastShadows;
 		in >> bDissolveFade >> bAssumeShadowmask >> bGlowmap;
-		in >> bEnvironmentMappingWindow >> bEnvironmentMappingEye;
+
+		if( version < 7 )
+			in >> bEnvironmentMappingWindow >> bEnvironmentMappingEye;
+		
 		in >> bHair >> hairR >> hairG >> hairB;
 		cHairTintColor.setRGB( hairR, hairG, hairB );
 
 		in >> bTree >> bFacegen >> bSkinTint >> bTessellate;
-		in >> fDisplacementTextureBias >> fDisplacementTextureScale;
-		in >> fTessellationPnScale >> fTessellationBaseFactor >> fTessellationFadeDistance;
-		in >> fGrayscaleToPaletteScale >> bSkewSpecularAlpha;
+
+		if( version < 3 )
+		{
+			in >> fDisplacementTextureBias >> fDisplacementTextureScale;
+			in >> fTessellationPnScale >> fTessellationBaseFactor >> fTessellationFadeDistance;
+		}
+
+		in >> fGrayscaleToPaletteScale;
+
+		if( version >= 1 )
+			in >> bSkewSpecularAlpha;
+		
+		if( version >= 3 )
+		{
+			in >> bTerrain;
+			
+			if( bTerrain )
+			{
+				if( version == 3 )
+					in >> uUnknown;
+				
+				in >> fTerrainThresholdFalloff >> fTerrainTilingDistance >> fTerrainRotationAngle;
+			}
+		}
 
 		return in.status() == QDataStream::Ok;
 	}
@@ -239,30 +333,54 @@ bool EffectMaterial::readFile()
 		return false;
 
 	QBuffer f( &data );
+
 	if ( f.open( QIODevice::ReadOnly ) ) {
 		in.setDevice( &f );
 		in.setByteOrder( QDataStream::LittleEndian );
 		in.setFloatingPointPrecision( QDataStream::SinglePrecision );
 
-		in.skipRawData( 63 );
+		in.skipRawData( position_ );
 
 		for ( int i = 0; i < 5; i++ ) {
 			char * str;
 			in >> str;
 			textureList << QString( str );
 		}
+		
+		if( version >= 11 )
+			for ( int i = 0; i < 3; i++ ) {
+				char * str;
+				in >> str;
+				textureList << QString( str );
+			}
+			
+		if( version >= 10 )
+			in >> bEnvironmentMapping >> EnvironmentMappingMaskScale;
 
 		in >> bBloodEnabled >> bEffectLightingEnabled;
 		in >> bFalloffEnabled >> bFalloffColorEnabled;
 		in >> bGrayscaleToPaletteAlpha >> bSoftEnabled;
+
 		in >> baseR >> baseG >> baseB;
-
 		cBaseColor.setRGB( baseR, baseG, baseB );
-
 		in >> fBaseColorScale;
+
 		in >> fFalloffStartAngle >> fFalloffStopAngle;
 		in >> fFalloffStartOpacity >> fFalloffStopOpacity;
 		in >> fLightingInfluence >> iEnvmapMinLOD >> fSoftDepth;
+
+		if( version >= 11 )
+			in >> emitR >> emitG >> emitB;
+		cEmittanceColor.setRGB( emitR, emitG, emitB );
+
+		if( version >= 15 )
+			in >> fAdaptativeEmissive_ExposureOffset >> fAdaptativeEmissive_FinalExposureMin >> fAdaptativeEmissive_FinalExposureMax;
+
+		if( version >= 16 )
+			in >> bGlowmap;
+
+		if( version >= 20 )
+			in >> bEffectPbrSpecular;
 
 		return in.status() == QDataStream::Ok;
 	}
