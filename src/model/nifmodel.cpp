@@ -2312,7 +2312,7 @@ bool NifModel::loadItem( NifItem * parent, NifIStream & stream )
 		if( child->name() == "Name" && child->type() == "string" )
 		{
 			QVector<QString> stringVector = getArray<QString>( getIndex( getHeader(), "Strings" ) );
-			if(stringVector[child->value().toCount()] == "")
+			if(child->value().toCount() == -1 || stringVector[child->value().toCount()] == "")
 				hasName = false;
 		}
 	}
@@ -2374,7 +2374,7 @@ bool NifModel::saveItem( NifItem * parent, NifOStream & stream ) const
 		if( child->name() == "Name" && child->type() == "string" )
 		{
 			QVector<QString> stringVector = getArray<QString>( getIndex( getHeader(), "Strings" ) );
-			if(stringVector[child->value().toCount()] == "")
+			if(child->value().toCount() == -1 || stringVector[child->value().toCount()] == "")
 				hasName = false;
 		}
 	}
