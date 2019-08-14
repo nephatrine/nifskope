@@ -1147,7 +1147,7 @@ void BSLightingShaderProperty::updateParams( const NifModel * nif, const QModelI
 	auto stream = nif->getUserVersion2();
 	auto textures = nif->getArray<QString>( getTextureSet(), "Textures" );
 
-	setShaderType( nif->get<unsigned int>( prop, "Skyrim Shader Type" ) );
+	setShaderType( nif->get<unsigned int>( prop, "Shader Type" ) );
 	
 	if( stream == 155 )
 	{
