@@ -1138,6 +1138,81 @@ void BSLightingShaderProperty::update( const NifModel * nif, const QModelIndex &
 
 }
 
+QMap<uint, uint64_t> ShaderFlags::CRC2Flag1 = {
+    {ShaderFlags::SF_SKINNED, ShaderFlags::SLSF1_Skinned},
+    {ShaderFlags::SF_TEMP_REFRACTION, ShaderFlags::SLSF1_Temp_Refraction},
+    {ShaderFlags::SF_VERTEX_ALPHA, ShaderFlags::SLSF1_Vertex_Alpha},
+    {ShaderFlags::SF_GRAYSCALE_TO_PALETTE_COLOR, ShaderFlags::SLSF1_Greyscale_To_PaletteColor},
+    {ShaderFlags::SF_GRAYSCALE_TO_PALETTE_ALPHA, ShaderFlags::SLSF1_Greyscale_To_PaletteAlpha},
+    {ShaderFlags::SF_CAST_SHADOWS, ShaderFlags::SLSF1_Cast_Shadows},
+    {ShaderFlags::SF_REFRACTION_CLAMP, 0},
+    {ShaderFlags::SF_EYEREFLECT, ShaderFlags::SLSF1_Eye_Environment_Mapping},
+    {ShaderFlags::SF_EMIT_ENABLED, ShaderFlags::SLSF1_Own_Emit},
+    {ShaderFlags::SF_PROJECTED_UV, ShaderFlags::SLSF1_Projected_UV},
+    {ShaderFlags::SF_TESSELLATE, ShaderFlags::SLSF1_Vertex_Alpha},
+    {ShaderFlags::SF_DECAL, ShaderFlags::SLSF1_Decal},
+    {ShaderFlags::SF_DYNAMIC_DECAL, ShaderFlags::SLSF1_Dynamic_Decal},
+    {ShaderFlags::SF_EXTERNAL_EMITTANCE, ShaderFlags::SLSF1_External_Emittance},
+    {ShaderFlags::SF_ZBUFFER_TEST, ShaderFlags::SLSF1_ZBuffer_Test},
+    {ShaderFlags::SF_ZBUFFER_WRITE, static_cast<uint64_t>( ShaderFlags::SLSF2_ZBuffer_Write ) << 32},
+    {ShaderFlags::SF_LOD_OBJECTS, static_cast<uint64_t>( ShaderFlags::SLSF2_LOD_Objects ) << 32},
+    {ShaderFlags::SF_TWO_SIDED, static_cast<uint64_t>( ShaderFlags::SLSF2_Double_Sided ) << 32},
+    {ShaderFlags::SF_VERTEXCOLORS, static_cast<uint64_t>( ShaderFlags::SLSF2_Vertex_Colors ) << 32},
+    {ShaderFlags::SF_GLOWMAP, static_cast<uint64_t>( ShaderFlags::SLSF2_Glow_Map ) << 32},
+    {ShaderFlags::SF_TRANSFORM_CHANGED, static_cast<uint64_t>( ShaderFlags::SLSF2_Assume_Shadowmask ) << 32},
+    {ShaderFlags::SF_DISMEMBERMENT_MEATCUFF, static_cast<uint64_t>( ShaderFlags::SLSF2_Packed_Tangent ) << 32},
+    {ShaderFlags::SF_TINT, static_cast<uint64_t>( ShaderFlags::SLSF2_Multi_Index_Snow ) << 32},
+    {ShaderFlags::SF_GRASS_UNIFORM_SCALE, static_cast<uint64_t>( ShaderFlags::SLSF2_Uniform_Scale ) << 32},
+    {ShaderFlags::SF_GRASS_BILLBOARD, static_cast<uint64_t>( ShaderFlags::SLSF2_Billboard ) << 32},
+    {ShaderFlags::SF_DISMEMBERMENT, static_cast<uint64_t>( ShaderFlags::SLSF2_EnvMap_Light_Fade ) << 32},
+    {ShaderFlags::SF_WIREFRAME, static_cast<uint64_t>( ShaderFlags::SLSF2_Wireframe ) << 32},
+    {ShaderFlags::SF_WEAPON_BLOOD, static_cast<uint64_t>( ShaderFlags::SLSF2_Weapon_Blood ) << 32},
+    {ShaderFlags::SF_HIDE_ON_LOCAL_MAP, static_cast<uint64_t>( ShaderFlags::SLSF2_Hide_On_Local_Map ) << 32},
+    {ShaderFlags::SF_VATS_TARGET, static_cast<uint64_t>( ShaderFlags::SLSF2_Cloud_LOD ) << 32},
+    {ShaderFlags::SF_MENU_SCREEN, static_cast<uint64_t>( ShaderFlags::SLSF2_Unused01 ) << 32},
+    {ShaderFlags::SF_PBR, 0},
+    {ShaderFlags::SF_ALPHA_TEST, static_cast<uint64_t>( ShaderFlags::SLSF2_Soft_Lighting ) << 32},
+    {ShaderFlags::SF_INVERTED_FADE_PATTERN, 0},
+    {ShaderFlags::SF_VATS_TARGET_DRAW_ALL, static_cast<uint64_t>( ShaderFlags::SLSF2_Back_Lighting ) << 32},
+    {ShaderFlags::SF_PIPBOY_SCREEN, static_cast<uint64_t>( ShaderFlags::SLSF2_Unused02 ) << 32},
+    {ShaderFlags::SF_TREE_ANIM, static_cast<uint64_t>( ShaderFlags::SLSF2_Tree_Anim ) << 32},
+    {ShaderFlags::SF_EFFECT_LIGHTING, static_cast<uint64_t>( ShaderFlags::SLSF2_Effect_Lighting ) << 32},
+    {ShaderFlags::SF_REFRACTION_WRITES_DEPTH, static_cast<uint64_t>( ShaderFlags::SLSF2_HD_LOD_Objects ) << 32},
+    {ShaderFlags::SF_SPLINE, 0},
+    {ShaderFlags::SF_TERRAIN, 0},
+    {ShaderFlags::SF_NO_EXPOSURE, 0},
+    {ShaderFlags::SF_CLUSTER, 0},
+    {ShaderFlags::SF_CLUSTER_LOD, 0},
+    {ShaderFlags::SF_CLUSTER_FORCE_RE_Z, 0},
+    {ShaderFlags::SF_DISTANCE_FIELD_ALPHA, 0},
+    {ShaderFlags::SF_STATIC, 0},
+    {ShaderFlags::SF_SKY_STATIC, 0},
+    {ShaderFlags::SF_NW_EFFECT, 0},
+    {ShaderFlags::SF_TERRAIN_SINGE, 0},
+    {ShaderFlags::SF_TERRAIN_MIMBLOCKS1, 0},
+    {ShaderFlags::SF_FIRE_ANIM, 0},
+    {ShaderFlags::SF_USE_OCCLUSION, 0}
+};
+
+QMap<uint, uint64_t> ShaderFlags::CRC2Flag2 = {
+    {ShaderFlags::SF_SKINNED, ShaderFlags::SLSF1_Skinned},
+    {ShaderFlags::SF_FALLOFF, ShaderFlags::SLSF1_Use_Falloff},
+    {ShaderFlags::SF_ENVMAP, ShaderFlags::SLSF1_Environment_Mapping},
+    {ShaderFlags::SF_RGB_FALLOFF, ShaderFlags::SLSF1_Recieve_Shadows},
+    {ShaderFlags::SF_FACE, ShaderFlags::SLSF1_Facegen_Detail_Map},
+    {ShaderFlags::SF_MODELSPACENORMALS, ShaderFlags::SLSF1_Model_Space_Normals},
+    {ShaderFlags::SF_REFRACTION, ShaderFlags::SLSF1_Refraction},
+    {ShaderFlags::SF_REFRACTION_FALLOFF, 0},
+    {ShaderFlags::SF_HAIRTINT, 0}, // F4SF1_Hair? (SLSF1_Hair_Soft_Lighting)
+    {ShaderFlags::SF_LOCALMAP_CLEAR, ShaderFlags::SLSF1_Localmap_Hide_Secret},
+    {ShaderFlags::SF_SKIN_TINT, ShaderFlags::SLSF1_FaceGen_RGB_Tint},
+    {ShaderFlags::SF_SOFT_EFFECT, ShaderFlags::SLSF1_Soft_Effect},
+    {ShaderFlags::SF_NOFADE, static_cast<uint64_t>( ShaderFlags::SLSF2_No_Fade ) << 32},
+    {ShaderFlags::SF_SKEW_SPECULAR_ALPHA, static_cast<uint64_t>( ShaderFlags::SLSF2_No_Transparency_Multisampling ) << 32},
+    {ShaderFlags::SF_DEPTH_BIAS, 0},
+    {ShaderFlags::SF_EFFECT_PBR_SPECULAR, 0}
+};
+
 void BSLightingShaderProperty::updateParams( const NifModel * nif, const QModelIndex & prop )
 {
 	ShaderMaterial * m = nullptr;
@@ -1149,116 +1224,27 @@ void BSLightingShaderProperty::updateParams( const NifModel * nif, const QModelI
 
 	setShaderType( nif->get<unsigned int>( prop, "Shader Type" ) );
 	
-	if( stream == 155 )
+	if( stream >= 132 )
 	{
-		auto sfArray1 = nif->getArray<unsigned int>( prop, "Shader Flag Array 1" );
-		auto sfArray2 = nif->getArray<unsigned int>( prop, "Shader Flag Array 2" );
 		unsigned int tmp1 = 0, tmp2 = 0;
 		
+		auto sfArray1 = nif->getArray<unsigned int>( prop, "Shader Flag Array 1" );
 		for( auto &&v : sfArray1 )
-		{
-			if( v == 0xDF3182B0 )      // SKINNED
-				tmp1 |= 0x2;           // SF1_Skinned
-			else if( v == 0x98C95388 ) // TEMP_REFRACTION
-				tmp1 |= 0x4;           // SF1_Temp_Refraction
-			else if( v == 0x8B0FD1F2 ) // VERTEX_ALPHA
-				tmp1 |= 0x8;           // SF1_Vertex_Alpha
-			else if( v == 0x1A5C2577 ) // GRAYSCALE_TO_PALETTE_COLOR
-				tmp1 |= 0x10;          // SF1_Greyscale_To_PaletteColor
-			else if( v == 0xACEA54F4 ) // GRAYSCALE_TO_PALETTE_ALPHA
-				tmp1 |= 0x20;          // SF1_Greyscale_To_PaletteAlpha
-			else if( v == 0x5D2DABEC ) // CAST_SHADOWS
-				tmp1 |= 0x200;         // SF1_Cast_Shadows
-			else if( v == 0xEBB2186D ) // EYEREFLECT
-				tmp1 |= 0x20000;       // SF1_Eye_Environment_Mapping
-			else if( v == 0x86DBD392 ) // EMIT_ENABLED
-				tmp1 |= 0x400000;      // SF1_Own_Emit
-			else if( v == 0x1D642EDF ) // PROJECTED_UV
-				tmp1 |= 0x800000;      // SF1_Projected_UV
-			else if( v == 0x570364DF ) // TESSELLATE
-				tmp1 |= 0x2000000;     // SF1_Tessellate
-			else if( v == 0xE56D16E0 ) // DECAL
-				tmp1 |= 0x4000000;     // SF1_Decal
-			else if( v == 0x5DF93B67 ) // DYNAMIC_DECAL
-				tmp1 |= 0x8000000;     // SF1_Dynamic_Decal
-			else if( v == 0x802D68A3 ) // EXTERNAL_EMITTANCE
-				tmp1 |= 0x20000000;    // SF1_External_Emittance
-			else if( v == 0x67B70934 ) // ZBUFFER_TEST
-				tmp1 |= 0x80000000;    // SF1_ZBuffer_Test
-			else if( v == 0xBCBAC5F3 ) // ZBUFFER_WRITE
-				tmp2 |= 0x1;           // SF2_ZBuffer_Write
-			else if( v == 0xACA889F3 ) // LOD_OBJECTS
-				tmp2 |= 0x4;           // SF2_LOD_Objects
-			else if( v == 0x2D45EC6E ) // TWO_SIDED
-				tmp2 |= 0x10;          // SF2_Double_Sided
-			else if( v == 0x14C5C2AD ) // VERTEXCOLORS
-				tmp2 |= 0x20;          // SF2_Vertex_Colors
-			else if( v == 0x8F044840 ) // GLOWMAP
-				tmp2 |= 0x40;          // SF2_Glow_Map
-			else if( v == 0xBE8ADFF2 ) // TRANSFORM_CHANGED
-				tmp2 |= 0x80;          // SF2_Transform_Changed
-			else if( v == 0xE3E702C9 ) // DISMEMBERMENT_MEATCUFF
-				tmp2 |= 0x100;         // SF2_Dismemberment_Meatcuff
-			else if( v == 0x39D8D9DC ) // TINT
-				tmp2 |= 0x200;         // SF2_Tint
-			else if( v == 0xA38C3547 ) // GRASS_UNIFORM_SCALE
-				tmp2 |= 0x800;         // SF2_Uniform_Scale
-			else if( v == 0x4185E4D2 ) // GRASS_BILLBOARD
-				tmp2 |= 0x2000;        // SF2_Billboard
-			else if( v == 0xAF7A8B94 ) // DISMEMBERMENT
-				tmp2 |= 0x8000;        // SF2_Dismemberment
-			else if( v == 0x4FB09F58 ) // WIREFRAME
-				tmp2 |= 0x10000;       // SF2_Wireframe
-			else if( v == 0x7BE0BF93 ) // WEAPON_BLOOD
-				tmp2 |= 0x20000;       // SF2_Weapon_Blood
-			else if( v == 0xE0387DC5 ) // HIDE_ON_LOCAL_MAP
-				tmp2 |= 0x40000;       // SF2_Hide_On_Local_Map
-			else if( v == 0xC7AC4F21 ) // VATS_TARGET
-				tmp2 |= 0x100000;      // SF2_VATS_Target
-			else if( v == 0x25322370 ) // MENU_SCREEN
-				tmp2 |= 0x800000;      // SF2_Menu_Screen
-			else if( v == 0xDAF59922 ) // ALPHA_TEST
-				tmp2 |= 0x2000000;     // SF2_Alpha_Test
-			else if( v == 0xD200543A ) // VATS_TARGET_DRAW_ALL
-				tmp2 |= 0x8000000;     // SF2_VATS_Target_Draw_All
-			else if( v == 0x46180AD9 ) // PIPBOY_SCREEN
-				tmp2 |= 0x10000000;    // SF2_Pipboy_Screen
-			else if( v == 0xBB222B29 ) // TREE_ANIM
-				tmp2 |= 0x20000000;    // SF2_Tree_Anim
-			else if( v == 0xCF08760A ) // EFFECT_LIGHTING
-				tmp2 |= 0x40000000;    // SF2_Effect_Lighting
-			else if( v == 0x2FF8F0EC ) // REFRACTION_WRITES_DEPTH
-				tmp2 |= 0x80000000;    // SF2_Refraction_Writes_Depth		
-		}
+			if ( ShaderFlags::CRC2Flag1.find(v) != ShaderFlags::CRC2Flag1.end() )
+			{
+				tmp1 |= ShaderFlags::CRC2Flag1[v] & 0xFFFFFFFF;
+				tmp2 |= ( ShaderFlags::CRC2Flag1[v] & 0xFFFFFFFF00000000uLL ) >> 32;
+			}
 
-		for( auto &&v : sfArray2 )
+		if( stream >= 152 )
 		{
-			if( v == 0xDF3182B0 )      // SKINNED
-				tmp1 |= 0x2;           // SF1_Skinned
-			else if( v == 0xED440D9C ) // FALLOFF
-				tmp1 |= 0x40;          // SF1_Use_Falloff
-			else if( v == 0xAC7B1CAA ) // ENVMAP
-				tmp1 |= 0x80;          // SF1_Environment_Mapping
-			else if( v == 0xCD92BF4B ) // RGB_FALLOFF
-				tmp1 |= 0x100;         // SF1_RGB_Falloff
-			else if( v == 0x12C549CF ) // FACE
-				tmp1 |= 0x400;         // SF1_FaceGen
-			else if( v == 0x97E67F9F ) // MODELSPACENORMALS
-				tmp1 |= 0x1000;        // SF1_Model_Space_Normals
-			else if( v == 0x74AAC97E ) // REFRACTION
-				tmp1 |= 0x8000;        // SF1_Refraction
-			else if( v == 0x4B58B946 ) // HAIRTINT
-				tmp1 |= 0x40000;       // SF1_Hair
-			else if( v == 0xE52CD75E ) // LOCALMAP_CLEAR
-				tmp1 |= 0x100000;      // SF1_Localmap_Hide_Secret
-			else if( v == 0x58727978 ) // SKIN_TINT
-				tmp1 |= 0x200000;      // SF1_Skin_Tint
-			else if( v == 0xD0CE0E30 ) // SOFT_EFFECT
-				tmp1 |= 0x40000000;    // SF1_Soft_Effect
-			else if( v == 0xB2757B8C ) // NOFADE
-				tmp2 |= 0x8;           // SF2_No_Fade
-			else if( v == 0x633D9B6D ) // SKEW_SPECULAR_ALPHA
-				tmp2 |= 0x400000;      // SF2_Skew_Specular_Alpha
+			auto sfArray2 = nif->getArray<unsigned int>( prop, "Shader Flag Array 2" );
+			for( auto &&v : sfArray2 )
+				if ( ShaderFlags::CRC2Flag2.find(v) != ShaderFlags::CRC2Flag2.end() )
+				{
+					tmp1 |= ShaderFlags::CRC2Flag2[v] & 0xFFFFFFFF;
+					tmp2 |= ( ShaderFlags::CRC2Flag2[v] & 0xFFFFFFFF00000000uLL ) >> 32;
+				}
 		}
 
 		setFlags1( tmp1 );

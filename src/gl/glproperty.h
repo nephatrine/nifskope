@@ -442,7 +442,6 @@ protected:
 
 REGISTER_PROPERTY( StencilProperty, Stencil )
 
-
 namespace ShaderFlags
 {
 	enum SF1 : unsigned int
@@ -516,6 +515,85 @@ namespace ShaderFlags
 		SLSF2_Effect_Lighting = 1 << 30,  // 30
 		SLSF2_HD_LOD_Objects = (unsigned int)(1 << 31),  // 31
 	};
+
+	enum BSCRC32 : unsigned int
+	{
+		SF_SKINNED                     = 0xDF3182B0,
+
+		// SF1-Exclusive
+		SF_TEMP_REFRACTION             = 0x98C95388,
+		SF_VERTEX_ALPHA                = 0x8B0FD1F2,
+		SF_GRAYSCALE_TO_PALETTE_COLOR  = 0x1A5C2577,
+		SF_GRAYSCALE_TO_PALETTE_ALPHA  = 0xACEA54F4,
+		SF_CAST_SHADOWS                = 0x5D2DABEC,
+		SF_REFRACTION_CLAMP            = 0xC8AE2783,
+		SF_EYEREFLECT                  = 0xEBB2186D,
+		SF_EMIT_ENABLED                = 0x86DBD392,
+		SF_PROJECTED_UV                = 0x1D642EDF,
+		SF_TESSELLATE                  = 0x570364DF,
+		SF_DECAL                       = 0xE56D16E0,
+		SF_DYNAMIC_DECAL               = 0x5DF93B67,
+		SF_EXTERNAL_EMITTANCE          = 0x802D68A3,
+		SF_ZBUFFER_TEST                = 0x67B70934,
+		SF_ZBUFFER_WRITE               = 0xBCBAC5F3,
+		SF_LOD_OBJECTS                 = 0xACA889F3,
+		SF_TWO_SIDED                   = 0x2D45EC6E,
+		SF_VERTEXCOLORS                = 0x14C5C2AD,
+		SF_GLOWMAP                     = 0x8F044840,
+		SF_TRANSFORM_CHANGED           = 0xBE8ADFF2,
+		SF_DISMEMBERMENT_MEATCUFF      = 0xE3E702C9,
+		SF_TINT                        = 0x39D8D9DC,
+		SF_GRASS_UNIFORM_SCALE         = 0xA38C3547,
+		SF_GRASS_BILLBOARD             = 0x4185E4D2,
+		SF_DISMEMBERMENT               = 0xAF7A8B94,
+		SF_WIREFRAME                   = 0x4FB09F58,
+		SF_WEAPON_BLOOD                = 0x7BE0BF93,
+		SF_HIDE_ON_LOCAL_MAP           = 0xE0387DC5,
+		SF_VATS_TARGET                 = 0xC7AC4F21,
+		SF_MENU_SCREEN                 = 0x25322370,
+		SF_PBR                         = 0x2B9633EF,
+		SF_ALPHA_TEST                  = 0xDAF59922,
+		SF_INVERTED_FADE_PATTERN       = 0xB4A75F06,
+		SF_VATS_TARGET_DRAW_ALL        = 0xD200543A,
+		SF_PIPBOY_SCREEN               = 0x46180AD9,
+		SF_TREE_ANIM                   = 0xBB222B29,
+		SF_EFFECT_LIGHTING             = 0xCF08760A,
+		SF_REFRACTION_WRITES_DEPTH     = 0x2FF8F0EC,
+		SF_SPLINE                      = 0x74CC33CC,
+		SF_TERRAIN                     = 0x6A5F72D5,
+		SF_NO_EXPOSURE                 = 0x47EC48F0,
+		SF_CLUSTER                     = 0xDCFA8A8B,
+		SF_CLUSTER_LOD                 = 0x0E221F1F,
+		SF_CLUSTER_FORCE_RE_Z          = 0xA4C32209,
+		SF_DISTANCE_FIELD_ALPHA        = 0xC18DA8C9,
+		SF_STATIC                      = 0xC1FA4E00,
+		SF_SKY_STATIC                  = 0x50EA9F22,
+		SF_NW_EFFECT                   = 0x6B744CC3,
+		SF_TERRAIN_SINGE               = 0xB032BBA8,
+		SF_TERRAIN_MIMBLOCKS1          = 0x64541E9A,
+		SF_FIRE_ANIM                   = 0xBABCCEE3,
+		SF_USE_OCCLUSION               = 0xAB85A138,
+
+		// SF2-Exclusive
+		SF_FALLOFF                     = 0xED440D9C,
+		SF_ENVMAP                      = 0xAC7B1CAA,
+		SF_RGB_FALLOFF                 = 0xCD92BF4B,
+		SF_FACE                        = 0x12C549CF,
+		SF_MODELSPACENORMALS           = 0x97E67F9F,
+		SF_REFRACTION                  = 0x74AAC97E,
+		SF_REFRACTION_FALLOFF          = 0x35C8C18B,
+		SF_HAIRTINT                    = 0x4B58B946,
+		SF_LOCALMAP_CLEAR              = 0xE52CD75E,
+		SF_SKIN_TINT                   = 0x58727978,
+		SF_SOFT_EFFECT                 = 0xD0CE0E30,
+		SF_NOFADE                      = 0xB2757B8C,
+		SF_SKEW_SPECULAR_ALPHA         = 0x633D9B6D,
+		SF_DEPTH_BIAS                  = 0x8DF65718,
+		SF_EFFECT_PBR_SPECULAR         = 0x5146A02D
+	};
+
+	extern QMap<uint, uint64_t> CRC2Flag1;
+	extern QMap<uint, uint64_t> CRC2Flag2;
 
 	enum ShaderType : unsigned int
 	{
